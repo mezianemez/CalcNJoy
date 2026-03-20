@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CalcNJoy — Calculate & Enjoy!</title>
+<meta name="description" content="CalcNJoy: The ultimate free calculator app — arithmetic, equations, unit converter, fun math tools & game!">
+<meta name="keywords" content="calculator, math, equations, unit converter, free calculator, online calculator">
+<meta property="og:title" content="CalcNJoy — Calculate & Enjoy!">
+<meta property="og:description" content="Free all-in-one calculator: equations, converter, math game & more!">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff6eb4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CalcNJoy">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7984959802798183" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg: #0d0d1a;
+  --surface: #141428;
+  --surface2: #1c1c38;
+  --pink:    #ff6eb4;
+  --cyan:    #00e5ff;
+  --yellow:  #ffe135;
+  --green:   #39ff8f;
+  --orange:  #ff8c42;
+  --purple:  #bf5fff;
+  --text:    #f0f0ff;
+  --text2:   #8888bb;
+  --border:  rgba(255,110,180,0.2);
+  --r: 18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── CURSOR ── */
+*, button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='%23ff6eb4' opacity='.7'/%3E%3C/svg%3E") 12 12, auto; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated mesh background */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 5%,  rgba(255,110,180,.13) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 15%, rgba(0,229,255,.10)  0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 90%, rgba(191,95,255,.10) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 70%, rgba(57,255,143,.07) 0%,transparent 60%);
+  pointer-events:none; z-index:0;
+  animation: bgShift 12s ease-in-out infinite alternate;
+}
+@keyframes bgShift{
+  0%{filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(30deg)}
+}
+
+/* Floating particles canvas */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+/* ── CONFETTI ── */
+.confetti-piece {
+  position:fixed; width:10px; height:10px;
+  top:-20px; pointer-events:none; z-index:9999;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%  {transform:translateY(0) rotate(0deg); opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg); opacity:0}
+}
+
+/* ── MODAL ── */
+#modal-overlay {
+  position:fixed;inset:0;
+  background:rgba(5,5,18,.92);
+  backdrop-filter:blur(12px);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-box {
+  background: linear-gradient(145deg, #181830, #1e1e40);
+  border: 1.5px solid rgba(255,110,180,.35);
+  border-radius:28px;
+  padding:44px 40px 36px;
+  max-width:540px; width:92%;
+  box-shadow: 0 0 80px rgba(255,110,180,.2), 0 0 160px rgba(0,229,255,.08);
+  animation: popIn .5s cubic-bezier(.16,1,.3,1);
+}
+@keyframes popIn{from{transform:scale(.85) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-logo {
+  font-family:'Righteous',cursive;
+  font-size:2.6rem; text-align:center; margin-bottom:4px;
+  background: linear-gradient(90deg, var(--pink), var(--cyan), var(--yellow));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(255,110,180,.5));
+}
+.modal-tagline{
+  text-align:center; font-size:.78rem; letter-spacing:3px;
+  color:var(--text2); text-transform:uppercase; margin-bottom:26px;
+}
+.tnc-scroll{
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px; padding:18px;
+  height:210px; overflow-y:auto;
+  font-size:.8rem; line-height:1.75; color:var(--text2);
+  margin-bottom:18px;
+}
+.tnc-scroll::-webkit-scrollbar{width:4px}
+.tnc-scroll::-webkit-scrollbar-thumb{background:var(--pink);border-radius:4px}
+.tnc-scroll h4{color:var(--text);margin:14px 0 4px;font-size:.82rem}
+.tnc-check{
+  display:flex;align-items:center;gap:10px;
+  font-size:.88rem;margin-bottom:22px;cursor:pointer;
+  color:var(--text2);
+}
+.tnc-check input{accent-color:var(--pink);width:17px;height:17px;cursor:pointer}
+.tnc-check:hover{color:var(--text)}
+.btn-agree{
+  width:100%;padding:16px;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  border:none;border-radius:14px;
+  color:#fff;font-family:'Righteous',cursive;
+  font-size:1.1rem;letter-spacing:1px;
+  transition:all .25s;opacity:.35;pointer-events:none;
+}
+.btn-agree.on{opacity:1;pointer-events:all}
+.btn-agree.on:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 30px rgba(255,110,180,.5)}
+
+/* ── APP ── */
+#app{position:relative;z-index:1;display:none;flex-direction:column;min-height:100vh}
+
+/* ── HEADER ── */
+header{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  padding:16px 28px;
+  border-bottom:1px solid var(--border);
+  background:rgba(13,13,26,.85);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:100;
+}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:2rem;animation:wiggle 3s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.logo-text{
+  font-family:'Righteous',cursive; font-size:1.7rem;
+  background:linear-gradient(90deg,var(--pink),var(--cyan),var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 12px rgba(255,110,180,.6));
+  letter-spacing:.5px;
+}
+.logo-abbr{
+  font-size:.58rem;color:var(--text2);font-family:'Fira Code',monospace;
+  letter-spacing:2px;text-transform:uppercase;
+}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{
+  padding:9px 18px;border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  color:var(--text2);font-family:'Nunito',sans-serif;
+  font-size:.82rem;font-weight:800;
+  border-radius:40px;transition:all .22s;
+  letter-spacing:.3px;
+}
+.tab:hover:not(.active){color:var(--text);border-color:rgba(255,110,180,.3);background:rgba(255,110,180,.07)}
+.tab.active{
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  border-color:transparent;color:#fff;
+  box-shadow:0 0 18px rgba(255,110,180,.4);
+}
+
+/* ── MAIN ── */
+main{flex:1;padding:28px;max-width:1120px;margin:0 auto;width:100%}
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.16,1,.3,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── SECTION HEADER ── */
+.sec-head{margin-bottom:24px}
+.sec-title{
+  font-family:'Righteous',cursive;font-size:1.7rem;
+  background:linear-gradient(90deg,var(--cyan),var(--green));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sec-sub{color:var(--text2);font-size:.8rem;font-family:'Fira Code',monospace;margin-top:4px}
+
+/* ── CALCULATOR ── */
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:720px){.calc-layout{grid-template-columns:1fr}}
+
+.calc-wrap{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(255,110,180,.18);
+  border-radius:24px;padding:22px;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+}
+.calc-display{
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(0,229,255,.15);
+  border-radius:16px;padding:20px 18px 14px;
+  margin-bottom:16px;
+  box-shadow:inset 0 2px 16px rgba(0,0,0,.4), 0 0 24px rgba(0,229,255,.04);
+}
+.calc-expr{
+  font-family:'Fira Code',monospace;
+  font-size:.75rem;color:var(--text2);
+  min-height:16px;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.calc-number{
+  font-family:'Fira Code',monospace;
+  font-size:2.8rem;font-weight:300;
+  text-align:right;line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  background:linear-gradient(90deg,var(--cyan),var(--text));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  transition:font-size .15s;
+}
+.btn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.btn{
+  padding:16px 6px;border:none;border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;
+  transition:all .15s;position:relative;overflow:hidden;
+}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:.15s}
+.btn:active::after{background:rgba(255,255,255,.14)}
+.btn:active{transform:scale(.93)}
+
+.bn{background:var(--surface2);color:var(--text);border:1px solid rgba(255,255,255,.06)}
+.bn:hover{background:#242450;border-color:rgba(255,255,255,.14)}
+.bo{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.25)}
+.bo:hover{background:rgba(0,229,255,.2)}
+.be{
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:#fff;border:none;
+  box-shadow:0 4px 18px rgba(255,110,180,.45);
+}
+.be:hover{transform:translateY(-3px) scale(1.04)!important;box-shadow:0 8px 30px rgba(255,110,180,.6)}
+.bc{background:rgba(255,80,80,.12);color:#ff6b6b;border:1px solid rgba(255,80,80,.22)}
+.bc:hover{background:rgba(255,80,80,.25)}
+.bf{background:rgba(191,95,255,.1);color:var(--purple);border:1px solid rgba(191,95,255,.22);font-size:.8rem}
+.bf:hover{background:rgba(191,95,255,.2)}
+.span2{grid-column:span 2}
+
+/* ── HISTORY ── */
+.history-panel{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(0,229,255,.15);
+  border-radius:24px;padding:22px;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+}
+.h-title{
+  font-family:'Righteous',cursive;font-size:1rem;
+  color:var(--cyan);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.h-list{list-style:none;max-height:360px;overflow-y:auto}
+.h-list::-webkit-scrollbar{width:3px}
+.h-list::-webkit-scrollbar-thumb{background:var(--pink);border-radius:3px}
+.h-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;margin-bottom:6px;
+  font-family:'Fira Code',monospace;font-size:.79rem;
+  animation:slideRight .3s ease;
+}
+@keyframes slideRight{from{transform:translateX(-12px);opacity:0}to{transform:translateX(0);opacity:1}}
+.h-expr{color:var(--text2)}
+.h-res{color:var(--green);font-weight:600}
+
+/* ── EQ PANEL ── */
+.eq-card{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(191,95,255,.2);
+  border-radius:20px;padding:22px;margin-bottom:20px;
+}
+.eq-card-title{
+  font-family:'Righteous',cursive;font-size:.95rem;
+  color:var(--purple);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.eq-card-title .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--purple);box-shadow:0 0 8px var(--purple);
+}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.chip{
+  padding:4px 13px;
+  background:rgba(191,95,255,.1);
+  border:1px solid rgba(191,95,255,.25);
+  border-radius:20px;font-size:.76rem;
+  font-family:'Fira Code',monospace;
+  color:var(--purple);transition:all .15s;
+}
+.chip:hover{background:rgba(191,95,255,.28);transform:scale(1.05)}
+.irow{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.cinput{
+  flex:1;min-width:180px;
+  background:rgba(0,0,0,.4);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:11px;padding:12px 16px;
+  color:var(--text);font-family:'Fira Code',monospace;
+  font-size:.87rem;outline:none;transition:all .2s;
+}
+.cinput:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(191,95,255,.15)}
+.cinput::placeholder{color:var(--text2)}
+.smbtn{
+  padding:12px 22px;
+  background:linear-gradient(135deg,var(--purple),#7c3aed);
+  border:none;border-radius:11px;color:#fff;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;
+  transition:all .2s;white-space:nowrap;
+}
+.smbtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(191,95,255,.5)}
+.resbox{
+  margin-top:12px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(57,255,143,.2);
+  border-radius:11px;padding:14px 16px;
+  font-family:'Fira Code',monospace;font-size:.86rem;
+  line-height:1.65;color:var(--green);display:none;
+  white-space:pre-line;
+}
+.resbox.show{display:block;animation:fadeUp .3s}
+.resbox.err{color:#ff6b6b;border-color:rgba(255,80,80,.25)}
+
+/* Upload */
+.upload-zone{
+  border:2px dashed rgba(255,110,180,.3);
+  border-radius:16px;padding:32px;text-align:center;
+  position:relative;transition:all .25s;
+}
+.upload-zone:hover,.upload-zone.drag{
+  border-color:var(--pink);
+  background:rgba(255,110,180,.05);
+  box-shadow:0 0 30px rgba(255,110,180,.15);
+}
+.upload-zone input{position:absolute;inset:0;opacity:0}
+.upload-icon{font-size:3rem;margin-bottom:10px;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.upload-zone p{color:var(--text2);font-size:.85rem}
+.upload-zone strong{color:var(--pink)}
+#img-preview{max-width:100%;max-height:200px;border-radius:12px;margin-top:14px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#upload-notice{display:none;margin-top:12px;padding:12px 16px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:11px;font-size:.8rem;color:var(--cyan)}
+
+/* ── CONVERTER ── */
+.conv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.conv-card{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(255,255,255,.07);
+  border-radius:20px;padding:20px;
+  transition:all .25s;
+}
+.conv-card:hover{border-color:rgba(0,229,255,.3);box-shadow:0 6px 30px rgba(0,229,255,.1);transform:translateY(-3px)}
+.ctitle{
+  font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:2px;color:var(--text2);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.cicon{font-size:1.2rem}
+.crow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.cinp2{
+  flex:1;background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;padding:10px 12px;
+  color:var(--text);font-family:'Fira Code',monospace;
+  font-size:.87rem;outline:none;transition:border-color .2s;
+}
+.cinp2:focus{border-color:var(--cyan)}
+.csel{
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;padding:10px 8px;
+  color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.78rem;outline:none;min-width:90px;
+}
+.cres{
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(57,255,143,.18);
+  border-radius:9px;padding:10px 12px;
+  font-family:'Fira Code',monospace;font-size:.87rem;
+  color:var(--green);min-height:38px;margin-top:8px;
+}
+
+/* ── GAME ── */
+.game-wrap{max-width:620px;margin:0 auto}
+.scorebar{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.scard{
+  flex:1;min-width:110px;
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:14px 18px;text-align:center;
+  transition:all .3s;
+}
+.scard.pulse-anim{animation:scardPulse .4s ease}
+@keyframes scardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.slabel{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--text2);margin-bottom:6px}
+.sval{font-family:'Fira Code',monospace;font-size:1.9rem;font-weight:600}
+.pink-val{color:var(--pink)}
+.green-val{color:var(--green)}
+.red-val{color:#ff6b6b}
+.yellow-val{color:var(--yellow)}
+
+.mode-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.mbtn{
+  flex:1;padding:11px 16px;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.08);
+  border-radius:12px;color:var(--text2);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;
+  transition:all .2s;
+}
+.mbtn.on{background:rgba(255,225,53,.12);border-color:rgba(255,225,53,.4);color:var(--yellow)}
+.mbtn:hover:not(.on){color:var(--text);border-color:rgba(255,255,255,.2)}
+
+.start-btn{
+  width:100%;padding:20px;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  border:none;border-radius:16px;color:#1a0a00;
+  font-family:'Righteous',cursive;font-size:1.3rem;letter-spacing:1px;
+  box-shadow:0 6px 28px rgba(255,225,53,.4);
+  transition:all .25s;
+}
+.start-btn:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 40px rgba(255,225,53,.6)}
+
+.game-card{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:32px;text-align:center;
+  margin-bottom:18px;
+  box-shadow:0 8px 40px rgba(0,0,0,.5);
+}
+.q-label{font-size:.72rem;font-family:'Fira Code',monospace;color:var(--text2);margin-bottom:14px}
+.q-text{
+  font-family:'Righteous',cursive;font-size:2.6rem;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:14px;min-height:64px;line-height:1.15;
+}
+.timer-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:24px;overflow:hidden}
+.timer-fill{height:100%;border-radius:3px;transition:width .1s linear;
+  background:linear-gradient(90deg,var(--green),var(--yellow),var(--orange),#ff4444)}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{
+  padding:18px;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  color:var(--text);font-family:'Fira Code',monospace;font-size:1.15rem;
+  transition:all .2s;
+}
+.opt:hover:not(:disabled){
+  border-color:var(--cyan);background:rgba(0,229,255,.1);
+  transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,229,255,.2);
+}
+.opt.correct{background:rgba(57,255,143,.15);border-color:var(--green);color:var(--green);animation:correctFlash .4s}
+.opt.wrong{background:rgba(255,80,80,.12);border-color:#ff6b6b;color:#ff6b6b;animation:wrongShake .35s}
+@keyframes correctFlash{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.opt:disabled{cursor:default}
+
+.game-over-wrap{
+  text-align:center;padding:40px 20px;
+  display:none;
+}
+.game-over-wrap.show{display:block;animation:popIn .5s cubic-bezier(.16,1,.3,1)}
+.go-emoji{font-size:4rem;margin-bottom:12px;animation:bounce 1s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.go-title{
+  font-family:'Righteous',cursive;font-size:2.2rem;
+  background:linear-gradient(90deg,var(--yellow),var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.go-score{
+  font-family:'Fira Code',monospace;font-size:4.5rem;
+  color:var(--yellow);font-weight:300;line-height:1;margin-bottom:8px;
+  filter:drop-shadow(0 0 20px rgba(255,225,53,.5));
+}
+.go-grade{color:var(--text2);font-size:.95rem;margin-bottom:28px;line-height:1.5}
+
+/* ── FUN WIDGETS ── */
+.fun-section{margin-top:32px}
+.fun-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:16px}
+.fun-card{
+  background:linear-gradient(145deg,#181830,#1c1c3a);
+  border:1.5px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:20px;text-align:center;
+  transition:all .25s;
+}
+.fun-card:hover{transform:translateY(-4px);border-color:rgba(255,110,180,.3);box-shadow:0 8px 30px rgba(255,110,180,.1)}
+.fun-emoji{font-size:2.5rem;margin-bottom:10px;display:block}
+.fun-title{font-family:'Righteous',cursive;font-size:1rem;margin-bottom:6px}
+.fun-input{
+  width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;padding:9px 12px;color:var(--text);
+  font-family:'Fira Code',monospace;font-size:.85rem;outline:none;
+  text-align:center;margin-bottom:8px;transition:border-color .2s;
+}
+.fun-input:focus{border-color:var(--pink)}
+.fun-btn{
+  width:100%;padding:9px;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  border:none;border-radius:9px;color:#fff;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;
+  transition:all .2s;
+}
+.fun-btn:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(255,110,180,.5)}
+.fun-result{
+  margin-top:8px;font-family:'Fira Code',monospace;
+  font-size:.8rem;color:var(--cyan);min-height:20px;
+  word-break:break-all;line-height:1.5;
+}
+
+/* ── MISC ── */
+@media(max-width:640px){
+  .q-text{font-size:1.8rem}
+  header{padding:14px 16px}
+  main{padding:16px}
+  .modal-box{padding:28px 20px}
+}
+.neon-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent);
+  border:none;margin:28px 0;opacity:.4;
+}
+.badge{
+  display:inline-block;padding:3px 10px;
+  background:rgba(57,255,143,.12);border:1px solid rgba(57,255,143,.25);
+  border-radius:20px;font-size:.7rem;color:var(--green);
+  font-family:'Fira Code',monospace;margin-left:8px;
+}
+/* ── ADS ── */
+.ad-top-bar{
+  width:100%;background:rgba(255,110,180,.04);
+  border-bottom:1px solid rgba(255,110,180,.12);
+  padding:6px 0;text-align:center;
+  min-height:66px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;
+}
+.ad-label{
+  font-size:.58rem;color:var(--text2);
+  font-family:'Fira Code',monospace;letter-spacing:1px;opacity:.55;
+  margin-bottom:2px;
+}
+.ad-inline{
+  width:100%;margin:22px 0;
+  background:rgba(0,229,255,.03);
+  border:1px dashed rgba(0,229,255,.12);
+  border-radius:14px;padding:10px 10px 6px;
+  text-align:center;min-height:110px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+}
+.ad-footer{
+  width:100%;background:rgba(0,0,0,.35);
+  border-top:1px solid rgba(255,110,180,.1);
+  padding:8px 0 12px;text-align:center;
+  min-height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;
+}
+.ad-footer-copy{
+  font-size:.65rem;color:var(--text2);font-family:'Fira Code',monospace;opacity:.5;margin-top:6px;
+}
+.adsbygoogle{display:block!important;}
+/* ── PWA INSTALL BTN ── */
+#install-btn{
+  display:none;position:fixed;bottom:22px;right:22px;z-index:500;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  color:#1a0a00;border:none;border-radius:50px;
+  padding:13px 22px 13px 16px;
+  font-family:'Righteous',cursive;font-size:.88rem;letter-spacing:.5px;
+  box-shadow:0 6px 28px rgba(255,225,53,.5);
+  animation:installPop .5s cubic-bezier(.16,1,.3,1), installFloat 3s ease-in-out 1s infinite;
+  display:none;align-items:center;gap:8px;
+}
+#install-btn.visible{display:flex!important;}
+#install-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 10px 36px rgba(255,225,53,.7)}
+@keyframes installPop{from{transform:scale(0) translateY(40px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes installFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-logo">CalcNJoy ✨</div>
+    <div class="modal-tagline">Calculate · aNd · Joy &amp; enjoy</div>
+    <div class="tnc-scroll">
+      <p>Welcome to <strong>CalcNJoy</strong> — your ultimate all-in-one calculator built for learning, fun, and precision! Before you dive in, please read these terms:</p>
+      <h4>1. Purpose & Accuracy</h4>
+      <p>CalcNJoy is designed for educational, personal, and general-purpose use. Always verify critical calculations independently. CalcNJoy is not liable for any errors in results used for professional or high-stakes decisions.</p>
+      <h4>2. Image Upload Policy</h4>
+      <p>When uploading an image (exam paper, equation photo, etc.):<br>
+      • You confirm you have the right to share this content.<br>
+      • Images are processed within your session only — never stored or transmitted.<br>
+      • Do not upload images with third-party personal data without consent.<br>
+      • You accept full responsibility for compliance with academic integrity policies at your institution.</p>
+      <h4>3. Academic Integrity</h4>
+      <p>Using CalcNJoy during exams in violation of your institution's rules is entirely your responsibility. This app is for learning and practice — please use it wisely!</p>
+      <h4>4. Game Scores</h4>
+      <p>All game scores are session-only. They reset when you start a new game or close the app. No personal data is saved anywhere.</p>
+      <h4>5. No Warranty</h4>
+      <p>CalcNJoy is provided "as is" without any warranties. Use at your own discretion.</p>
+      <h4>6. Have Fun!</h4>
+      <p>Most importantly — enjoy the app! CalcNJoy was built to make math fun and accessible for everyone. 🎉</p>
+    </div>
+    <label class="tnc-check">
+      <input type="checkbox" id="tnc" onchange="document.getElementById('abtn').classList.toggle('on',this.checked)">
+      I've read and agree to the Terms & Conditions
+    </label>
+    <button class="btn-agree" id="abtn" onclick="launch()">🚀 Let's CalcNJoy!</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- ══ TOP AD BANNER ══ -->
+  <div class="ad-top-bar">
+    <div class="ad-label">— إعلان —</div>
+    <ins class="adsbygoogle"
+         style="display:block;width:100%;max-width:728px;height:90px;"
+         data-ad-client="ca-pub-7984959802798183"
+         data-ad-slot="1111111111"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
+  </div>
+
+  <header>
+    <div class="logo-wrap">
+      <span class="logo-icon">🧮</span>
+      <div>
+        <div class="logo-text">CalcNJoy</div>
+        <div class="logo-abbr">Calculate &amp; Enjoy</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" onclick="tab('std',this)">🔢 Standard</button>
+      <button class="tab" onclick="tab('eq',this)">📐 Equations</button>
+      <button class="tab" onclick="tab('cv',this)">📏 Convert</button>
+      <button class="tab" onclick="tab('gm',this)">🎮 Game</button>
+      <button class="tab" onclick="tab('fun',this)">✨ Fun Tools</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ══ STANDARD ══ -->
+    <div class="panel active" id="p-std">
+      <div class="sec-head">
+        <div class="sec-title">🔢 Calculator</div>
+        <div class="sec-sub">// arithmetic · scientific · keyboard supported</div>
+      </div>
+      <div class="calc-layout">
+        <div class="calc-wrap">
+          <div class="calc-display">
+            <div class="calc-expr" id="expr-disp"></div>
+            <div class="calc-number" id="num-disp">0</div>
+          </div>
+          <div class="btn-grid">
+            <button class="btn bf" onclick="fn('sin(')">sin</button>
+            <button class="btn bf" onclick="fn('cos(')">cos</button>
+            <button class="btn bf" onclick="fn('tan(')">tan</button>
+            <button class="btn bf" onclick="fn('sqrt(')">√</button>
+            <button class="btn bf" onclick="fn('log(')">log</button>
+            <button class="btn bf" onclick="fn('ln(')">ln</button>
+            <button class="btn bf" onclick="fn('3.14159265')">π</button>
+            <button class="btn bf" onclick="fn('**2')">x²</button>
+            <button class="btn bc" onclick="cls()">AC</button>
+            <button class="btn bo" onclick="fn('(')">(</button>
+            <button class="btn bo" onclick="fn(')')">)</button>
+            <button class="btn bo" onclick="op('/')">÷</button>
+            <button class="btn bn" onclick="num('7')">7</button>
+            <button class="btn bn" onclick="num('8')">8</button>
+            <button class="btn bn" onclick="num('9')">9</button>
+            <button class="btn bo" onclick="op('*')">×</button>
+            <button class="btn bn" onclick="num('4')">4</button>
+            <button class="btn bn" onclick="num('5')">5</button>
+            <button class="btn bn" onclick="num('6')">6</button>
+            <button class="btn bo" onclick="op('-')">−</button>
+            <button class="btn bn" onclick="num('1')">1</button>
+            <button class="btn bn" onclick="num('2')">2</button>
+            <button class="btn bn" onclick="num('3')">3</button>
+            <button class="btn bo" onclick="op('+')">+</button>
+            <button class="btn bn span2" onclick="num('0')">0</button>
+            <button class="btn bn" onclick="num('.')">.</button>
+            <button class="btn be" onclick="eq()">=</button>
+          </div>
+        </div>
+        <div class="history-panel">
+          <div class="h-title">📜 History <span class="badge">session</span></div>
+          <ul class="h-list" id="h-list">
+            <li style="color:var(--text2);font-size:.78rem;font-family:'Fira Code',monospace;padding:8px 0">No calculations yet...</li>
+          </ul>
+        </div>
+      </div>
+
+    <!-- ══ INLINE AD ══ -->
+    <div class="ad-inline">
+      <div class="ad-label">إعلان</div>
+      <ins class="adsbygoogle"
+           style="display:block;width:100%;max-width:700px;height:100px;"
+           data-ad-client="ca-pub-7984959802798183"
+           data-ad-slot="2222222222"
+           data-ad-format="rectangle"
+           data-full-width-responsive="true"></ins>
+    </div>
+    </div>
+
+    <!-- ══ EQUATIONS ══ -->
+    <div class="panel" id="p-eq">
+      <div class="sec-head">
+        <div class="sec-title">📐 Equations & Functions</div>
+        <div class="sec-sub">// solve · evaluate · upload</div>
+      </div>
+
+      <div class="eq-card">
+        <div class="eq-card-title"><span class="dot"></span> Expression Evaluator</div>
+        <div class="chips">
+          <span class="chip" onclick="eqInsert('sin(x)')">sin(x)</span>
+          <span class="chip" onclick="eqInsert('cos(x)')">cos(x)</span>
+          <span class="chip" onclick="eqInsert('tan(x)')">tan(x)</span>
+          <span class="chip" onclick="eqInsert('sqrt(x)')">√x</span>
+          <span class="chip" onclick="eqInsert('x^2')">x²</span>
+          <span class="chip" onclick="eqInsert('log(x)')">log(x)</span>
+          <span class="chip" onclick="eqInsert('e^x')">eˣ</span>
+          <span class="chip" onclick="eqInsert('abs(x)')">|x|</span>
+          <span class="chip" onclick="eqInsert('factorial(x)')">x!</span>
+          <span class="chip" onclick="eqInsert('pi')">π</span>
+        </div>
+        <div class="irow">
+          <input class="cinput" id="eq-in" placeholder="e.g.  sin(45)  or  2x^2 + 3x - 5 = 0" />
+          <button class="smbtn" onclick="evalEq()">Solve →</button>
+        </div>
+        <div class="resbox" id="eq-res"></div>
+      </div>
+
+      <div class="eq-card">
+        <div class="eq-card-title"><span class="dot" style="background:var(--cyan)"></span> Linear Equation &nbsp;<small style="color:var(--text2);font-size:.75rem">ax + b = c</small></div>
+        <div class="irow">
+          <input class="cinput" id="la" placeholder="a" style="max-width:80px">
+          <span style="color:var(--text2);padding-top:12px;font-family:'Fira Code',monospace">x +</span>
+          <input class="cinput" id="lb" placeholder="b" style="max-width:80px">
+          <span style="color:var(--text2);padding-top:12px;font-family:'Fira Code',monospace">=</span>
+          <input class="cinput" id="lc" placeholder="c" style="max-width:80px">
+          <button class="smbtn" style="background:linear-gradient(135deg,var(--cyan),#0891b2)" onclick="linSolve()">Solve x →</button>
+        </div>
+        <div class="resbox" id="lin-res"></div>
+      </div>
+
+      <div class="eq-card">
+        <div class="eq-card-title"><span class="dot" style="background:var(--pink)"></span> Quadratic Equation &nbsp;<small style="color:var(--text2);font-size:.75rem">ax² + bx + c = 0</small></div>
+        <div class="irow">
+          <input class="cinput" id="qa" placeholder="a" style="max-width:80px">
+          <input class="cinput" id="qb" placeholder="b" style="max-width:80px">
+          <input class="cinput" id="qc" placeholder="c" style="max-width:80px">
+          <button class="smbtn" style="background:linear-gradient(135deg,var(--pink),#c2185b)" onclick="quadSolve()">Solve →</button>
+        </div>
+        <div class="resbox" id="quad-res"></div>
+      </div>
+
+      <div class="eq-card">
+        <div class="eq-card-title"><span class="dot" style="background:var(--green)"></span> Upload Equation / Exam Paper 📷</div>
+        <p style="color:var(--text2);font-size:.8rem;margin-bottom:14px">Upload a photo of a math problem. By uploading you confirm you agreed to the image policy in our Terms.</p>
+        <div class="upload-zone" id="up-zone">
+          <input type="file" accept="image/*" onchange="handleImg(event)">
+          <span class="upload-icon">📸</span>
+          <p><strong>Tap to upload</strong> or drag & drop your image here</p>
+          <p style="margin-top:6px;font-size:.75rem">JPG · PNG · GIF · WebP</p>
+        </div>
+        <img id="img-preview" src="" alt="Preview">
+        <div id="upload-notice">✅ Image loaded — processed in-session only, never stored. Ready for reference!</div>
+      </div>
+    </div>
+
+    <!-- ══ CONVERTER ══ -->
+    <div class="panel" id="p-cv">
+      <div class="sec-head">
+        <div class="sec-title">📏 Unit Converter</div>
+        <div class="sec-sub">// length · weight · volume · temp · speed · area · energy · data · time · more</div>
+      </div>
+      <div class="conv-grid" id="conv-grid"></div>
+    </div>
+
+    <!-- ══ GAME ══ -->
+    <div class="panel" id="p-gm">
+      <div class="sec-head">
+        <div class="sec-title">🎮 Math Challenge</div>
+        <div class="sec-sub">// test your mental math · scores reset each game · no data saved</div>
+      </div>
+      <div class="game-wrap">
+        <div class="scorebar">
+          <div class="scard" id="sc-score"><div class="slabel">Score</div><div class="sval pink-val" id="gsc">0</div></div>
+          <div class="scard" id="sc-cor"><div class="slabel">✅ Correct</div><div class="sval green-val" id="gcor">0</div></div>
+          <div class="scard" id="sc-wrg"><div class="slabel">❌ Wrong</div><div class="sval red-val" id="gwrg">0</div></div>
+          <div class="scard" id="sc-str"><div class="slabel">🔥 Streak</div><div class="sval yellow-val" id="gstr">0</div></div>
+        </div>
+
+        <div id="gm-start">
+          <div class="mode-row">
+            <button class="mbtn on" id="m-easy" onclick="setMode('easy')">😊 Easy</button>
+            <button class="mbtn" id="m-medium" onclick="setMode('medium')">😤 Medium</button>
+            <button class="mbtn" id="m-hard" onclick="setMode('hard')">🔥 Hard</button>
+            <button class="mbtn" id="m-insane" onclick="setMode('insane')">💀 Insane</button>
+          </div>
+          <button class="start-btn" onclick="startGame()">⚡ START GAME</button>
+        </div>
+
+        <div id="gm-play" style="display:none">
+          <div class="game-card">
+            <div class="q-label" id="qlabel">Question 1/10</div>
+            <div class="q-text" id="qtext">—</div>
+            <div class="timer-bar"><div class="timer-fill" id="tbar" style="width:100%"></div></div>
+            <div class="opt-grid" id="opts"></div>
+          </div>
+        </div>
+
+        <div class="game-over-wrap" id="gm-over">
+          <div class="go-emoji" id="go-emoji">🎉</div>
+          <div class="go-title">Game Over!</div>
+          <div class="go-score" id="go-score">0</div>
+          <div class="go-grade" id="go-grade"></div>
+          <button class="start-btn" style="max-width:260px;margin:0 auto" onclick="resetGame()">🔄 Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FUN TOOLS ══ -->
+    <div class="panel" id="p-fun">
+      <div class="sec-head">
+        <div class="sec-title">✨ Fun Math Tools</div>
+        <div class="sec-sub">// random · curious · delightful</div>
+      </div>
+      <div class="fun-grid">
+
+        <div class="fun-card">
+          <span class="fun-emoji">🎲</span>
+          <div class="fun-title">Random Number</div>
+          <input class="fun-input" id="rmin" placeholder="Min" value="1">
+          <input class="fun-input" id="rmax" placeholder="Max" value="100">
+          <button class="fun-btn" onclick="randNum()">Roll!</button>
+          <div class="fun-result" id="rres"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">📊</span>
+          <div class="fun-title">Average Calculator</div>
+          <input class="fun-input" id="avg-in" placeholder="1, 4, 9, 16, 25...">
+          <button class="fun-btn" onclick="calcAvg()">Calculate</button>
+          <div class="fun-result" id="avg-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">🔢</span>
+          <div class="fun-title">Prime Checker</div>
+          <input class="fun-input" id="prime-in" placeholder="Enter a number" type="number">
+          <button class="fun-btn" onclick="checkPrime()">Check!</button>
+          <div class="fun-result" id="prime-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">🌀</span>
+          <div class="fun-title">Fibonacci</div>
+          <input class="fun-input" id="fib-in" placeholder="How many terms?" type="number" value="10">
+          <button class="fun-btn" onclick="fibSeq()">Generate</button>
+          <div class="fun-result" id="fib-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">💰</span>
+          <div class="fun-title">Tip Calculator</div>
+          <input class="fun-input" id="bill" placeholder="Bill amount">
+          <input class="fun-input" id="tip-pct" placeholder="Tip % (e.g. 15)" value="15">
+          <button class="fun-btn" onclick="calcTip()">Split!</button>
+          <div class="fun-result" id="tip-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">📐</span>
+          <div class="fun-title">Triangle Solver</div>
+          <input class="fun-input" id="tri-a" placeholder="Side a">
+          <input class="fun-input" id="tri-b" placeholder="Side b">
+          <button class="fun-btn" onclick="triSolve()">Find Hypotenuse</button>
+          <div class="fun-result" id="tri-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">🧪</span>
+          <div class="fun-title">GCD & LCM</div>
+          <input class="fun-input" id="gcd-a" placeholder="Number A" type="number">
+          <input class="fun-input" id="gcd-b" placeholder="Number B" type="number">
+          <button class="fun-btn" onclick="gcdLcm()">Calculate</button>
+          <div class="fun-result" id="gcd-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">📅</span>
+          <div class="fun-title">Age Calculator</div>
+          <input class="fun-input" id="bday" type="date">
+          <button class="fun-btn" onclick="calcAge()">My Age!</button>
+          <div class="fun-result" id="age-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">💎</span>
+          <div class="fun-title">Body Mass Index</div>
+          <input class="fun-input" id="bmi-w" placeholder="Weight (kg)">
+          <input class="fun-input" id="bmi-h" placeholder="Height (cm)">
+          <button class="fun-btn" onclick="calcBMI()">Calculate BMI</button>
+          <div class="fun-result" id="bmi-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">⚡</span>
+          <div class="fun-title">Power & Roots</div>
+          <input class="fun-input" id="pow-b" placeholder="Base" type="number">
+          <input class="fun-input" id="pow-e" placeholder="Exponent" type="number">
+          <button class="fun-btn" onclick="calcPow()">Compute</button>
+          <div class="fun-result" id="pow-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">🎯</span>
+          <div class="fun-title">Percentage Tools</div>
+          <input class="fun-input" id="pct-val" placeholder="Value (e.g. 75)">
+          <input class="fun-input" id="pct-of" placeholder="Of total (e.g. 200)">
+          <button class="fun-btn" onclick="calcPct()">What %?</button>
+          <div class="fun-result" id="pct-res"></div>
+        </div>
+
+        <div class="fun-card">
+          <span class="fun-emoji">🌡️</span>
+          <div class="fun-title">Quick Temp Convert</div>
+          <input class="fun-input" id="qt-val" placeholder="Temperature value" type="number">
+          <select class="fun-input" id="qt-from" style="margin-bottom:8px">
+            <option>Celsius → Fahrenheit</option>
+            <option>Fahrenheit → Celsius</option>
+            <option>Celsius → Kelvin</option>
+            <option>Kelvin → Celsius</option>
+          </select>
+          <button class="fun-btn" onclick="quickTemp()">Convert!</button>
+          <div class="fun-result" id="qt-res"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- PWA Install Button -->
+  <button id="install-btn" onclick="installPWA()">
+    <span style="font-size:1.2rem">📲</span> تثبيت التطبيق
+  </button>
+
+  <!-- ══ FOOTER AD ══ -->
+  <div class="ad-footer">
+    <div class="ad-label">— إعلان —</div>
+    <ins class="adsbygoogle"
+         style="display:block;width:100%;max-width:728px;height:90px;"
+         data-ad-client="ca-pub-7984959802798183"
+         data-ad-slot="3333333333"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
+    <div class="ad-footer-copy">© 2025 CalcNJoy · Calculate &amp; Enjoy · All rights reserved</div>
+  </div>
+
+</div>
+
+<script>
+/* ── PARTICLES ── */
+(()=>{
+  const c=document.getElementById('particles');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize(); window.addEventListener('resize',resize);
+  const colors=['#ff6eb4','#00e5ff','#ffe135','#39ff8f','#bf5fff','#ff8c42'];
+  for(let i=0;i<55;i++) pts.push({
+    x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*2+.5,
+    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+    col:colors[Math.floor(Math.random()*colors.length)],
+    a:Math.random()*.6+.2
+  });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col;ctx.globalAlpha=p.a;ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── CONFETTI ── */
+function confetti(count=60){
+  const cols=['#ff6eb4','#00e5ff','#ffe135','#39ff8f','#bf5fff','#ff8c42','#fff'];
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    d.className='confetti-piece';
+    d.style.cssText=`
+      left:${Math.random()*100}vw;
+      width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*2}s;
+      animation-delay:${Math.random()*.5}s;
+    `;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),(3.5+Math.random()*2)*1000);
+  }
+}
+
+/* ── MODAL ── */
+function launch(){
+  document.getElementById('modal-overlay').style.display='none';
+  const app=document.getElementById('app');
+  app.style.display='flex';
+  buildConverters();
+  confetti(30);
+}
+
+/* ── TABS ── */
+function tab(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ── STANDARD CALC ── */
+let expr='',jeval=false;
+function upd(){
+  const d=document.getElementById('num-disp');
+  d.textContent=expr||'0';
+  const len=(expr||'0').length;
+  d.style.fontSize=len>18?'1.5rem':len>13?'2rem':'2.8rem';
+}
+function num(n){if(jeval&&/\d/.test(n)){expr=''}jeval=false;expr+=n;upd()}
+function op(o){jeval=false;if(expr===''&&o==='-'){expr='-'}else if(expr!=='')expr+=o;upd()}
+function fn(f){jeval=false;if(f==='3.14159265')expr+=f;else expr+=f;upd()}
+function cls(){expr='';jeval=false;document.getElementById('expr-disp').textContent='';upd()}
+function eq(){
+  if(!expr)return;
+  try{
+    let e=expr
+      .replace(/sin\(/g,'Math.sin(Math.PI/180*')
+      .replace(/cos\(/g,'Math.cos(Math.PI/180*')
+      .replace(/tan\(/g,'Math.tan(Math.PI/180*')
+      .replace(/sqrt\(/g,'Math.sqrt(')
+      .replace(/log\(/g,'Math.log10(')
+      .replace(/ln\(/g,'Math.log(')
+      .replace(/abs\(/g,'Math.abs(')
+      .replace(/factorial\((\d+)\)/g,(_,n)=>fact(+n));
+    let r=Function('"use strict";return('+e+')')();
+    if(!isFinite(r))throw 0;
+    r=Math.round(r*1e10)/1e10;
+    document.getElementById('expr-disp').textContent=expr+' =';
+    addHist(expr,r);
+    expr=String(r);jeval=true;upd();
+  }catch{document.getElementById('expr-disp').textContent='⚠ Error';expr='';upd()}
+}
+function fact(n){return n<=1?1:n*fact(n-1)}
+function addHist(e,r){
+  const l=document.getElementById('h-list');
+  if(l.querySelector('li[style]'))l.innerHTML='';
+  const li=document.createElement('li');
+  li.className='h-item';
+  li.innerHTML=`<span class="h-expr">${e}</span><span class="h-res">${r}</span>`;
+  l.prepend(li);
+  if(l.children.length>15)l.removeChild(l.lastChild);
+}
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('app').style.display==='none')return;
+  const ap=document.querySelector('.panel.active');
+  if(!ap||ap.id!=='p-std')return;
+  if('0123456789'.includes(e.key))num(e.key);
+  else if('+-'.includes(e.key))op(e.key);
+  else if(e.key==='*')op('*');
+  else if(e.key==='/'){e.preventDefault();op('/')}
+  else if(e.key==='.')num('.');
+  else if(e.key==='Enter'||e.key==='=')eq();
+  else if(e.key==='Backspace'){expr=expr.slice(0,-1);upd()}
+  else if(e.key==='Escape')cls();
+});
+
+/* ── EQUATIONS ── */
+function eqInsert(t){const i=document.getElementById('eq-in');i.value+=t;i.focus()}
+function showRes(el,txt,err){el.textContent=txt;el.className='resbox show'+(err?' err':'');el.style.display='block'}
+
+function safeEval(ex){
+  let e=ex.replace(/\^/g,'**')
+    .replace(/sin\(([^)]*)\)/g,(_,a)=>'Math.sin(Math.PI/180*('+a+'))')
+    .replace(/cos\(([^)]*)\)/g,(_,a)=>'Math.cos(Math.PI/180*('+a+'))')
+    .replace(/tan\(([^)]*)\)/g,(_,a)=>'Math.tan(Math.PI/180*('+a+'))')
+    .replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log10(')
+    .replace(/ln\(/g,'Math.log(').replace(/abs\(/g,'Math.abs(')
+    .replace(/factorial\((\d+)\)/g,(_,n)=>fact(+n))
+    .replace(/\bpi\b/gi,'Math.PI').replace(/\be\b/g,'Math.E');
+  return Math.round(Function('"use strict";return('+e+')')()  *1e10)/1e10;
+}
+function evalEq(){
+  const raw=document.getElementById('eq-in').value.trim();
+  const res=document.getElementById('eq-res');
+  if(!raw){showRes(res,'Please enter an expression!',true);return}
+  try{
+    if(raw.includes('=')){
+      const[l,r]=raw.split('=').map(s=>s.trim());
+      try{const L=safeEval(l),R=safeEval(r);
+        showRes(res,L===R?`✓ Both sides equal ${L}`:`Left = ${L},  Right = ${R}\nDifference = ${Math.abs(L-R)}`,L!==R);
+      }catch{showRes(res,'Could not evaluate sides numerically. Substitute a value for x.',false)}
+    } else {showRes(res,`Result: ${safeEval(raw)}`,false)}
+  }catch{showRes(res,'⚠ Syntax error. Check your expression.',true)}
+}
+function linSolve(){
+  const a=+document.getElementById('la').value,
+        b=+document.getElementById('lb').value,
+        c=+document.getElementById('lc').value;
+  const res=document.getElementById('lin-res');
+  if(!a){showRes(res,'⚠ Coefficient a cannot be 0.',true);return}
+  const x=Math.round((c-b)/a*1e10)/1e10;
+  showRes(res,`x = (${c} − ${b}) ÷ ${a}\nx = ${x}`,false);
+}
+function quadSolve(){
+  const a=+document.getElementById('qa').value,
+        b=+document.getElementById('qb').value,
+        c=+document.getElementById('qc').value;
+  const res=document.getElementById('quad-res');
+  if(!a){showRes(res,'⚠ a cannot be 0.',true);return}
+  const D=b*b-4*a*c;
+  if(D>0){
+    const x1=(-b+Math.sqrt(D))/(2*a), x2=(-b-Math.sqrt(D))/(2*a);
+    showRes(res,`Discriminant Δ = ${Math.round(D*1e8)/1e8} > 0 → Two real roots\nx₁ = ${Math.round(x1*1e10)/1e10}\nx₂ = ${Math.round(x2*1e10)/1e10}`,false);
+  } else if(D===0){
+    showRes(res,`Δ = 0 → One real root\nx = ${Math.round(-b/(2*a)*1e10)/1e10}`,false);
+  } else {
+    const re=Math.round(-b/(2*a)*1e8)/1e8, im=Math.round(Math.sqrt(-D)/(2*a)*1e8)/1e8;
+    showRes(res,`Δ = ${Math.round(D*1e8)/1e8} < 0 → Complex roots\nx₁ = ${re} + ${im}i\nx₂ = ${re} − ${im}i`,false);
+  }
+}
+function handleImg(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const p=document.getElementById('img-preview');
+    p.src=ev.target.result;p.style.display='block';
+    document.getElementById('upload-notice').style.display='block';
+  };
+  r.readAsDataURL(f);
+}
+
+/* ── CONVERTERS ── */
+const CONVS=[
+  {title:'Length',icon:'📏',units:['mm','cm','m','km','inch','foot','yard','mile','Nautical Mile','Light Year'],base:[1e-3,1e-2,1,1e3,0.0254,0.3048,0.9144,1609.344,1852,9.461e15]},
+  {title:'Weight / Mass',icon:'⚖️',units:['mg','g','kg','Metric Ton','Ounce','Pound','Stone','US Ton'],base:[1e-6,1e-3,1,1000,0.028349,0.453592,6.35029,907.185]},
+  {title:'Volume',icon:'🧪',units:['mL','Liter','m³','Teaspoon','Tablespoon','Cup (US)','Pint (US)','Gallon (US)','fl oz'],base:[1e-3,1,1000,4.92892e-3,0.014787,0.236588,0.473176,3.78541,0.029574]},
+  {title:'Temperature',icon:'🌡️',units:['Celsius','Fahrenheit','Kelvin'],base:null,temp:true},
+  {title:'Speed',icon:'🚀',units:['m/s','km/h','mph','Knot','Mach','ft/s'],base:[1,0.27778,0.44704,0.51444,340.29,0.3048]},
+  {title:'Area',icon:'🗺️',units:['mm²','cm²','m²','km²','Hectare','Acre','ft²'],base:[1e-6,1e-4,1,1e6,1e4,4046.86,0.0929]},
+  {title:'Pressure',icon:'💨',units:['Pascal','kPa','Bar','atm','PSI','mmHg'],base:[1,1000,1e5,101325,6894.76,133.322]},
+  {title:'Energy',icon:'⚡',units:['Joule','kJ','Calorie','Kilocalorie','kWh','BTU','eV'],base:[1,1000,4.184,4184,3.6e6,1055.06,1.602e-19]},
+  {title:'Data Storage',icon:'💾',units:['Bit','Byte','KB','MB','GB','TB','PB'],base:[.125,1,1024,1048576,1073741824,1.0995e12,1.1259e15]},
+  {title:'Time',icon:'⏱️',units:['Millisecond','Second','Minute','Hour','Day','Week','Month','Year'],base:[.001,1,60,3600,86400,604800,2628000,31536000]},
+  {title:'Angle',icon:'📐',units:['Degree','Radian','Gradian','Turn'],base:[Math.PI/180,1,Math.PI/200,2*Math.PI]},
+  {title:'Fuel Efficiency',icon:'⛽',units:['km/L','L/100km','mpg (US)','mpg (UK)'],base:null,fuel:true},
+];
+function buildConverters(){
+  const g=document.getElementById('conv-grid');
+  CONVS.forEach((cv,ci)=>{
+    const card=document.createElement('div');card.className='conv-card';
+    const opts=cv.units.map(u=>`<option>${u}</option>`).join('');
+    const opts2=cv.units.map((u,i)=>`<option ${i===1?'selected':''}>${u}</option>`).join('');
+    const evName=cv.temp?`convTemp(${ci})`:cv.fuel?`convFuel(${ci})`:`convUnit(${ci})`;
+    card.innerHTML=`
+      <div class="ctitle"><span class="cicon">${cv.icon}</span>${cv.title}</div>
+      <div class="crow">
+        <input class="cinp2" id="ci${ci}" placeholder="Value" type="number" oninput="${evName}">
+        <select class="csel" id="cf${ci}" onchange="${evName}">${opts}</select>
+      </div>
+      <div style="color:var(--text2);text-align:center;font-size:1.1rem;margin:4px 0">↓</div>
+      <div class="crow">
+        <div class="cres" id="cr${ci}" style="flex:1">—</div>
+        <select class="csel" id="ct${ci}" onchange="${evName}">${opts2}</select>
+      </div>`;
+    g.appendChild(card);
+  });
+}
+function convUnit(ci){
+  const cv=CONVS[ci],v=parseFloat(document.getElementById('ci'+ci).value);
+  const res=document.getElementById('cr'+ci);
+  if(isNaN(v)){res.textContent='—';return}
+  const fi=cv.units.indexOf(document.getElementById('cf'+ci).value);
+  const ti=cv.units.indexOf(document.getElementById('ct'+ci).value);
+  res.textContent=fmtN(v*cv.base[fi]/cv.base[ti])+' '+cv.units[ti];
+}
+function convTemp(ci){
+  const v=parseFloat(document.getElementById('ci'+ci).value);
+  const from=document.getElementById('cf'+ci).value,to=document.getElementById('ct'+ci).value;
+  const res=document.getElementById('cr'+ci);
+  if(isNaN(v)){res.textContent='—';return}
+  let C=from==='Celsius'?v:from==='Fahrenheit'?(v-32)*5/9:v-273.15;
+  let r=to==='Celsius'?C:to==='Fahrenheit'?C*9/5+32:C+273.15;
+  res.textContent=fmtN(r)+' '+to;
+}
+function convFuel(ci){
+  const v=parseFloat(document.getElementById('ci'+ci).value);
+  const from=document.getElementById('cf'+ci).value,to=document.getElementById('ct'+ci).value;
+  const res=document.getElementById('cr'+ci);
+  if(isNaN(v)||v===0){res.textContent='—';return}
+  let kml=from==='km/L'?v:from==='L/100km'?100/v:from==='mpg (US)'?v*0.425144:v*0.354006;
+  let r=to==='km/L'?kml:to==='L/100km'?100/kml:to==='mpg (US)'?kml/0.425144:kml/0.354006;
+  res.textContent=fmtN(r)+' '+to;
+}
+function fmtN(n){
+  if(!isFinite(n))return'∞';
+  if(Math.abs(n)<1e-6||Math.abs(n)>1e12)return n.toExponential(4);
+  return parseFloat(n.toPrecision(8)).toString();
+}
+
+/* ── GAME ── */
+let gMode='easy',gSc=0,gCor=0,gWrg=0,gStr=0,gQ=0,gTot=10,gTmr=null,gTL=0,curQ=null;
+function setMode(m){
+  gMode=m;
+  document.querySelectorAll('.mbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('m-'+m).classList.add('on');
+}
+function genQ(){
+  const cfg={easy:{ops:['+','-'],max:20,pt:10,t:15},medium:{ops:['+','-','×','÷'],max:50,pt:20,t:12},hard:{ops:['+','-','×','÷','²','√'],max:100,pt:30,t:8},insane:{ops:['+','-','×','÷','²','√','%'],max:200,pt:50,t:5}}[gMode];
+  const op=cfg.ops[Math.floor(Math.random()*cfg.ops.length)];
+  let a=Math.floor(Math.random()*cfg.max)+1,b=Math.floor(Math.random()*cfg.max)+1,q,ans;
+  switch(op){
+    case'+':q=`${a} + ${b}`;ans=a+b;break;
+    case'-':if(a<b)[a,b]=[b,a];q=`${a} − ${b}`;ans=a-b;break;
+    case'×':a=Math.floor(Math.random()*20)+1;b=Math.floor(Math.random()*20)+1;q=`${a} × ${b}`;ans=a*b;break;
+    case'÷':b=Math.floor(Math.random()*12)+1;ans=Math.floor(Math.random()*12)+1;a=b*ans;q=`${a} ÷ ${b}`;break;
+    case'²':a=Math.floor(Math.random()*20)+2;q=`${a}²`;ans=a*a;break;
+    case'√':ans=Math.floor(Math.random()*15)+2;q=`√${ans*ans}`;break;
+    case'%':b=[10,20,25,50][Math.floor(Math.random()*4)];a=Math.floor(Math.random()*cfg.max/b+1)*b;q=`${b}% of ${a}`;ans=a*b/100;break;
+    default:q=`${a}+${b}`;ans=a+b;
+  }
+  let wrongs=new Set();
+  while(wrongs.size<3){let w=ans+Math.floor(Math.random()*20)-10;if(w!==ans&&w>=0)wrongs.add(w)}
+  return{q,ans,opts:[ans,...wrongs].sort(()=>Math.random()-.5),t:cfg.t,pt:cfg.pt};
+}
+function startGame(){
+  gSc=0;gCor=0;gWrg=0;gStr=0;gQ=0;updScore();
+  document.getElementById('gm-start').style.display='none';
+  document.getElementById('gm-play').style.display='block';
+  document.getElementById('gm-over').classList.remove('show');
+  nextQ();
+}
+function nextQ(){
+  if(gQ>=gTot){endGame();return}
+  gQ++;curQ=genQ();
+  document.getElementById('qlabel').textContent=`Question ${gQ}/${gTot} · ${gMode.toUpperCase()}`;
+  document.getElementById('qtext').textContent=curQ.q;
+  const opts=document.getElementById('opts');opts.innerHTML='';
+  curQ.opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(o,b);
+    opts.appendChild(b);
+  });
+  startTmr(curQ.t);
+}
+function startTmr(s){
+  gTL=s;if(gTmr)clearInterval(gTmr);
+  const bar=document.getElementById('tbar');bar.style.width='100%';
+  gTmr=setInterval(()=>{
+    gTL-=.1;bar.style.width=(gTL/s*100)+'%';
+    if(gTL<=0){clearInterval(gTmr);timeUp()}
+  },100);
+}
+function timeUp(){
+  gWrg++;gStr=0;updScore();
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(+b.textContent===curQ.ans)b.classList.add('correct')});
+  setTimeout(nextQ,1200);
+}
+function pick(val,btn){
+  clearInterval(gTmr);
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  if(val===curQ.ans){
+    btn.classList.add('correct');gCor++;gStr++;
+    const bonus=Math.floor(gTL/2);gSc+=curQ.pt+bonus;
+    confetti(25);
+  } else {
+    btn.classList.add('wrong');gWrg++;gStr=0;
+    document.querySelectorAll('.opt').forEach(b=>{if(+b.textContent===curQ.ans)b.classList.add('correct')});
+  }
+  updScore();setTimeout(nextQ,950);
+}
+function updScore(){
+  ['sc-score','sc-cor','sc-wrg','sc-str'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('pulse-anim');void el.offsetWidth;
+    el.classList.add('pulse-anim');
+  });
+  document.getElementById('gsc').textContent=gSc;
+  document.getElementById('gcor').textContent=gCor;
+  document.getElementById('gwrg').textContent=gWrg;
+  document.getElementById('gstr').textContent=gStr;
+}
+function endGame(){
+  document.getElementById('gm-play').style.display='none';
+  const pct=gCor/gTot*100;
+  const emojis=['😢','😅','🙂','😊','🌟','🏆'];
+  document.getElementById('go-emoji').textContent=emojis[Math.min(5,Math.floor(pct/20))];
+  document.getElementById('go-score').textContent=gSc;
+  const grades=[
+    [100,'🏆 PERFECT! You are an absolute math genius!'],
+    [80,'🌟 Excellent! Top-tier mental math!'],
+    [60,'👍 Good job! Keep up the practice!'],
+    [40,'📚 Not bad! Math gets easier with time!'],
+    [0,'💪 Keep going! Every mistake is a lesson!']
+  ];
+  document.getElementById('go-grade').textContent=(grades.find(([t])=>pct>=t)||grades[4])[1]+` — ${gCor}/${gTot} correct`;
+  document.getElementById('gm-over').classList.add('show');
+  if(pct===100)confetti(120);
+  else if(pct>=80)confetti(60);
+}
+function resetGame(){
+  document.getElementById('gm-over').classList.remove('show');
+  document.getElementById('gm-start').style.display='block';
+}
+
+/* ── FUN TOOLS ── */
+function fr(id,txt){document.getElementById(id).textContent=txt}
+function randNum(){const mn=+document.getElementById('rmin').value,mx=+document.getElementById('rmax').value;fr('rres','🎲 '+Math.floor(Math.random()*(mx-mn+1)+mn))}
+function calcAvg(){
+  const vals=document.getElementById('avg-in').value.split(',').map(v=>+v.trim()).filter(v=>!isNaN(v));
+  if(!vals.length){fr('avg-res','Enter comma-separated numbers');return}
+  const sum=vals.reduce((a,b)=>a+b,0),avg=sum/vals.length;
+  fr('avg-res',`Sum: ${sum} | Count: ${vals.length}\nAverage: ${Math.round(avg*1e8)/1e8}`);
+}
+function checkPrime(){
+  const n=+document.getElementById('prime-in').value;
+  if(!n||n<2){fr('prime-res','⚠ Enter a number ≥ 2');return}
+  let isPrime=true;
+  for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0){isPrime=false;break}
+  fr('prime-res',isPrime?`✅ ${n} is PRIME! 🌟`:`❌ ${n} is NOT prime (divisible by factors)`);
+}
+function fibSeq(){
+  const n=Math.min(+document.getElementById('fib-in').value||10,40);
+  let seq=[0,1];for(let i=2;i<n;i++)seq.push(seq[i-1]+seq[i-2]);
+  fr('fib-res',seq.slice(0,n).join(', '));
+}
+function calcTip(){
+  const bill=+document.getElementById('bill').value,pct=+document.getElementById('tip-pct').value;
+  if(!bill){fr('tip-res','Enter bill amount');return}
+  const tip=bill*pct/100;
+  fr('tip-res',`Tip: ${tip.toFixed(2)}\nTotal: ${(bill+tip).toFixed(2)}\nSplit (2): ${((bill+tip)/2).toFixed(2)}`);
+}
+function triSolve(){
+  const a=+document.getElementById('tri-a').value,b=+document.getElementById('tri-b').value;
+  if(!a||!b){fr('tri-res','Enter sides a and b');return}
+  const h=Math.sqrt(a*a+b*b);
+  fr('tri-res',`Hypotenuse c = √(${a}² + ${b}²)\nc ≈ ${Math.round(h*1e6)/1e6}`);
+}
+function gcdLcm(){
+  const a=+document.getElementById('gcd-a').value,b=+document.getElementById('gcd-b').value;
+  if(!a||!b){fr('gcd-res','Enter two numbers');return}
+  function gcd(x,y){return y===0?x:gcd(y,x%y)}
+  const g=gcd(Math.abs(a),Math.abs(b));
+  fr('gcd-res',`GCD: ${g}\nLCM: ${Math.abs(a*b)/g}`);
+}
+function calcAge(){
+  const val=document.getElementById('bday').value;
+  if(!val){fr('age-res','Pick your birthday');return}
+  const dob=new Date(val),now=new Date();
+  let y=now.getFullYear()-dob.getFullYear();
+  const m=now.getMonth()-dob.getMonth();
+  if(m<0||(m===0&&now.getDate()<dob.getDate()))y--;
+  const days=Math.floor((now-dob)/86400000);
+  fr('age-res',`Age: ${y} years\n≈ ${days.toLocaleString()} days old 🎂`);
+}
+function calcBMI(){
+  const w=+document.getElementById('bmi-w').value,h=+document.getElementById('bmi-h').value/100;
+  if(!w||!h){fr('bmi-res','Enter weight & height');return}
+  const bmi=Math.round(w/h/h*10)/10;
+  const cat=bmi<18.5?'Underweight':bmi<25?'✅ Normal weight':bmi<30?'Overweight':'Obese';
+  fr('bmi-res',`BMI: ${bmi}\nCategory: ${cat}`);
+}
+function calcPow(){
+  const b=+document.getElementById('pow-b').value,e=+document.getElementById('pow-e').value;
+  fr('pow-res',`${b}^${e} = ${Math.pow(b,e)}`);
+}
+function calcPct(){
+  const v=+document.getElementById('pct-val').value,t=+document.getElementById('pct-of').value;
+  if(!t){fr('pct-res','Enter total');return}
+  fr('pct-res',`${v} is ${Math.round(v/t*10000)/100}% of ${t}`);
+}
+function quickTemp(){
+  const v=+document.getElementById('qt-val').value,mode=document.getElementById('qt-from').value;
+  let r;
+  if(mode.includes('C → F'))r=`${v}°C = ${Math.round(v*9/5+32)}°F`;
+  else if(mode.includes('F → C'))r=`${v}°F = ${Math.round((v-32)*5/9*100)/100}°C`;
+  else if(mode.includes('C → K'))r=`${v}°C = ${Math.round((v+273.15)*100)/100} K`;
+  else r=`${v} K = ${Math.round((v-273.15)*100)/100}°C`;
+  fr('qt-res',r);
+}
+
+// ── Initialize all AdSense ads ──
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    var ads = document.querySelectorAll('.adsbygoogle');
+    ads.forEach(function(ad) {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    });
+  } catch(e) { console.log('AdSense:', e); }
+});
+
+// ── PWA Service Worker ──
+// Only registers on real hosting — silent in preview/sandbox
+if('serviceWorker' in navigator){
+  const _host = location.hostname;
+  const _isPreview = !_host || _host === 'localhost' || _host === '127.0.0.1'
+    || _host.includes('claudeusercontent.com')
+    || _host.includes('github.io') === false && _host.split('.').length < 2;
+  const _isRealHost = _host && !_host.includes('claudeusercontent.com') && _host !== 'localhost' && _host !== '127.0.0.1' && _host !== '';
+  if(_isRealHost){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(r => console.log('✅ CalcNJoy SW active:', r.scope))
+        .catch(() => {}); // silent — SW only works on real hosting
+    });
+  }
+}
+
+// ── PWA Install Prompt ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('install-btn');
+  if(btn) btn.classList.add('visible');
+});
+function installPWA(){
+  const btn = document.getElementById('install-btn');
+  if(!deferredPrompt){ 
+    alert('لتثبيت التطبيق:\nAndroid: اضغط القائمة ← "إضافة إلى الشاشة الرئيسية"\niPhone: اضغط زر المشاركة 📤 ← "إضافة إلى الشاشة الرئيسية"');
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(r => {
+    if(r.outcome === 'accepted'){ if(btn) btn.classList.remove('visible'); confetti(50); }
+    deferredPrompt = null;
+  });
+}
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-btn').classList.remove('visible');
+  confetti(80);
+});
+</script>
+</body>
+</html>
